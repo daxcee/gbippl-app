@@ -16,6 +16,7 @@ const store = createStoreWithMiddleware(reducer);
 import IntroContainer from './introContainer';
 import Home from '../components/home';
 import CabangDetail from '../components/cabangDetail';
+import EventDetail from '../components/eventDetail';
 
 const load = storage.createLoader(engine);
 load(store)
@@ -39,12 +40,12 @@ BackAndroid.addEventListener('hardwareBackPress', () => {
 
 class App extends React.Component {
     componentDidMount() {
-        asyncStore.get('IntroLoaded')
-            .then((loaded) => {
-                if (loaded) {
-                    _navigator.resetTo({name: 'home'});
-                }
-            });
+        // asyncStore.get('IntroLoaded')
+        //     .then((loaded) => {
+        //         if (loaded) {
+        //             _navigator.resetTo({name: 'home'});
+        //         }
+        //     });
     }
     render() {
         return (
@@ -60,6 +61,8 @@ class App extends React.Component {
                                 return <Home navigator={navigator}/>;
                             case 'cabangDetail':
                                 return <CabangDetail cabang={route.data} navigator={navigator}/>
+                            case 'eventDetail':
+                                return <EventDetail event={route.data} navigator={navigator}/>
                             default: 
                                 return <Text>Not Found</Text>;
                         }

@@ -1,3 +1,5 @@
 export const FINISH_INTRO = 'FINISH_INTRO';
 export const REQUEST_CABANG = 'REQUEST_CABANG';
 export const RECEIVE_CABANG = 'RECEIVE_CABANG';
+export const REQUEST_EVENT = 'REQUEST_EVENT';
+export const RECEIVE_EVENT = 'RECEIVE_EVENT';

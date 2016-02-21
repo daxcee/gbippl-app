@@ -8,7 +8,7 @@ import React, {
     Alert,
     PullToRefreshViewAndroid
 } from 'react-native';
-import MapView from 'react-native-maps';
+// import MapView from 'react-native-maps';
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -71,28 +71,29 @@ class Cabang extends React.Component {
         return (
             <View style={styles.container}>
                 {this.state.activeView == 'map' ?
-                    <MapView
-                        style={{flex: 1}}
-                        initialRegion={{
-                            latitude: -6.906872,
-                            longitude: 107.612695,
-                            latitudeDelta: 0.08,
-                            longitudeDelta: 0.08,
-                        }}>
-                        {this.props.cabang.map((marker, i) => {
-                            return (
-                                <MapView.Marker
-                                    key={i} 
-                                    coordinate={{
-                                        latitude: parseFloat(marker.lat),
-                                        longitude: parseFloat(marker.lng)
-                                    }}
-                                    title={marker.name}
-                                    description={marker.address}
-                                />
-                            );
-                        })}
-                    </MapView>
+                    <div />
+                    // <MapView
+                    //     style={{flex: 1}}
+                    //     initialRegion={{
+                    //         latitude: -6.906872,
+                    //         longitude: 107.612695,
+                    //         latitudeDelta: 0.08,
+                    //         longitudeDelta: 0.08,
+                    //     }}>
+                    //     {this.props.cabang.map((marker, i) => {
+                    //         return (
+                    //             <MapView.Marker
+                    //                 key={i} 
+                    //                 coordinate={{
+                    //                     latitude: parseFloat(marker.lat),
+                    //                     longitude: parseFloat(marker.lng)
+                    //                 }}
+                    //                 title={marker.name}
+                    //                 description={marker.address}
+                    //             />
+                    //         );
+                    //     })}
+                    // </MapView>
                     :
                     <PullToRefreshViewAndroid
                         style={{flex: 1}}

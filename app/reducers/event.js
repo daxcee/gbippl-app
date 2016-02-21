@@ -2,16 +2,16 @@ import * as types from '../actions/actionTypes';
 import update from 'react-addons-update';
 
 const initialState = {
-    cabang: []
+    event: []
 }
 
-export default function cabang(state = initialState, action = {}) {
+export default function event(state = initialState, action = {}) {
     switch (action.type) {
-        case types.REQUEST_CABANG:
+        case types.REQUEST_EVENT:
             return state;
-        case types.RECEIVE_CABANG:
+        case types.RECEIVE_EVENT:
             return update(state, {
-                cabang: {$set: action.payload.cabang}
+                event: {$set: action.payload.event}
             });
         default:
             return state;

@@ -9,7 +9,7 @@ import {
     Linking
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import MapView from 'react-native-maps';
+// import MapView from 'react-native-maps';
 import Button from 'apsl-react-native-button'
 import WebIntent from 'react-native-webintent'
 import ActionButton from 'react-native-action-button'
@@ -30,6 +30,24 @@ let styles = {
         color: '#777'
     }
 };
+
+// <MapView
+//     style={{height: 150}}
+//     initialRegion={{
+//         latitude: parseFloat(cabang.lat),
+//         longitude: parseFloat(cabang.lng),
+//         latitudeDelta: 0.006,
+//         longitudeDelta: 0.006,
+//     }}>
+//     <MapView.Marker 
+//         coordinate={{
+//             latitude: parseFloat(cabang.lat),
+//             longitude: parseFloat(cabang.lng)
+//         }}
+//         title={cabang.name}
+//         description={cabang.address}
+//     />
+// </MapView>
 
 class CabangDetail extends React.Component {
     constructor(props) {
@@ -55,23 +73,9 @@ class CabangDetail extends React.Component {
                     />
                 <View style={{flex: 1, backgroundColor: '#fff'}}>
                     <ScrollView>
-                        <MapView
-                            style={{height: 150}}
-                            initialRegion={{
-                                latitude: parseFloat(cabang.lat),
-                                longitude: parseFloat(cabang.lng),
-                                latitudeDelta: 0.006,
-                                longitudeDelta: 0.006,
-                            }}>
-                            <MapView.Marker 
-                                coordinate={{
-                                    latitude: parseFloat(cabang.lat),
-                                    longitude: parseFloat(cabang.lng)
-                                }}
-                                title={cabang.name}
-                                description={cabang.address}
-                            />
-                        </MapView>
+                        
+
+
                         <View style={{padding: 15, marginBottom: 20}}>
                             <Text style={styles.heading}>
                                 {cabang.name}

@@ -84,19 +84,19 @@ class Intro extends React.Component {
                     onPageSelected={this.onPageSelected.bind(this)}
                     ref={viewPager => { this.viewPager = viewPager; }}>
                     <View style={styles.pageStyle}>
-                        <Image source={require('../../img/splash1.jpg')} style={{flex: 1, resizeMode: 'contain'}}/>
+                        <Image source={require('../../img/splash1.jpg')} style={{flex: 1}} resizeMode={'cover'}/>
                     </View>
                     <View style={styles.pageStyle}>
-                        <Image source={require('../../img/peka.jpg')} style={{flex: 1, resizeMode: 'contain'}}/>
+                        <Image source={require('../../img/peka.jpg')} style={{flex: 1}} resizeMode={'cover'}/>
                     </View>
                     <View style={styles.pageStyle}>
-                        <Image source={require('../../img/genneo.jpg')} style={{flex: 1, resizeMode: 'contain'}}/>
+                        <Image source={require('../../img/genneo.jpg')} style={{flex: 1}} resizeMode={'cover'}/>
                     </View>
                     <View style={styles.pageStyle}>
-                        <Image source={require('../../img/wbi.jpg')} style={{flex: 1, resizeMode: 'contain'}}/>
+                        <Image source={require('../../img/wbi.jpg')} style={{flex: 1}} resizeMode={'cover'}/>
                     </View>
                     <View style={styles.pageStyle}>
-                        <Image source={require('../../img/mk.jpg')} style={{flex: 1, resizeMode: 'contain'}}/>
+                        <Image source={require('../../img/mk.jpg')} style={{flex: 1}} resizeMode={'cover'}/>
                     </View>
                 </ViewPagerAndroid>
                 <View style={{position: 'absolute', bottom: 80, left: 0, right: 0, alignItems: 'flex-start'}}>

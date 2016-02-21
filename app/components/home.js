@@ -11,6 +11,7 @@ import { Tab, TabLayout } from 'react-native-android-tablayout';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import CabangContainer from '../containers/cabangContainer';
+import EventContainer from '../containers/eventContainer';
 
 let styles = {
     toolbar: {
@@ -105,73 +106,7 @@ class Home extends React.Component {
 
         return (
             <View style={{flex: 1, backgroundColor: 'white'}}>
-                <DrawerLayoutAndroid
-                    ref="drawer"
-                    drawerWidth={300}
-                    drawerPosition={DrawerLayoutAndroid.positions.Left}
-                    renderNavigationView={() => navigationView}>
-                    
-                    <View style={{flex: 1}}>
-                        <ToolbarAndroid
-                            logo={require('../../img/app_logo.png')}
-                            title=""
-                            style={styles.toolbar}
-                            navIcon={{uri: 'menu', isStatic: true}}
-                            onIconClicked={this.openDrawer.bind(this)}
-                            />
-
-                        <View>
-                            <TabLayout 
-                                style={{backgroundColor: '#f96332', height: 60, paddingTop: 20}} 
-                                selectedTabIndicatorColor={'#fff'}
-                                selectedTab={this.state.pagePosition}
-                                onTabSelected={this._setPagePosition.bind(this)}    >
-                                <Tab name="Berita"
-                                    textColor={'#f96332'}
-                                    iconSize={24}
-                                    iconUri={this.state.iconPaper}/>
-                                <Tab name="Event"
-                                    textColor={'#f96332'}
-                                    iconSize={24}
-                                    iconUri={this.state.iconCalendar}/>
-                                <Tab name="Cabang"
-                                    textColor={'#f96332'}
-                                    iconSize={24}
-                                    iconUri={this.state.iconLocation}/>
-                                <Tab name="komunitas"
-                                    textColor={'#f96332'}
-                                    iconSize={24}
-                                    iconUri={this.state.iconPeople}/>
-                                <Tab name="Profil"
-                                    textColor={'#f96332'}
-                                    iconSize={24}
-                                    iconUri={this.state.iconHome}/>
-                            </TabLayout>
-                        </View>
-                        <View style={{flex: 1}}>
-                            <ViewPagerAndroid
-                                style={styles.viewPager}
-                                ref={viewPager => { this.viewPager = viewPager; }}
-                                onPageSelected={this._setPagePosition.bind(this)}>
-                                <View style={styles.content}>
-                                    <Text>Tab 1 content</Text>
-                                </View>
-                                <View style={styles.content}>
-                                    <Text>Tab 2 content</Text>
-                                </View>
-                                <View style={styles.content}>
-                                    <CabangContainer navigator={this.props.navigator}/>
-                                </View>
-                                <View style={styles.content}>
-                                    <Text>Tab 4 content</Text>
-                                </View>
-                                <View style={styles.content}>
-                                    <Text>Tab 5 content</Text>
-                                </View>
-                            </ViewPagerAndroid>
-                        </View>
-                    </View>
-                  </DrawerLayoutAndroid>
+                <Text>Hello</Text>
             </View>
         );
     }
