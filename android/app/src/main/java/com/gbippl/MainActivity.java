@@ -1,11 +1,16 @@
 package com.gbippl;
 
 import com.facebook.react.ReactActivity;
+import com.AirMaps.AirPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
+import com.xebia.reactnative.TabLayoutPackage;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
+import com.ivanph.webintent.RNWebIntentPackage;
 
 import java.util.Arrays;
 import java.util.List;
+import me.neo.react.StatusBarPackage;
 
 public class MainActivity extends ReactActivity {
 
@@ -34,7 +39,12 @@ public class MainActivity extends ReactActivity {
     @Override
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
-        new MainReactPackage()
+        new MainReactPackage(),
+        new AirPackage(),
+        new VectorIconsPackage(),
+        new TabLayoutPackage(),
+        new StatusBarPackage(this),
+        new RNWebIntentPackage()
       );
     }
 }

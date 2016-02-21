@@ -1,0 +1,3 @@
+export const FINISH_INTRO = 'FINISH_INTRO';
+export const REQUEST_CABANG = 'REQUEST_CABANG';
+export const RECEIVE_CABANG = 'RECEIVE_CABANG';

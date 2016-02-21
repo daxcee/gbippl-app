@@ -6,6 +6,22 @@
     "start": "node node_modules/react-native/local-cli/cli.js start"
   },
   "dependencies": {
-    "react-native": "^0.19.0"
+    "apsl-react-native-button": "^2.4.2",
+    "axios": "^0.9.1",
+    "fbjs": "^0.6.0",
+    "react-addons-update": "^0.14.7",
+    "react-native": "0.19.0",
+    "react-native-action-button": "^1.1.2",
+    "react-native-android-statusbar": "^0.1.2",
+    "react-native-android-tablayout": "^0.2.0",
+    "react-native-maps": "^0.3.0",
+    "react-native-simple-store": "^0.1.0",
+    "react-native-vector-icons": "^1.1.1",
+    "react-native-webintent": "^1.0.4",
+    "react-redux": "4.1.2",
+    "redux": "3.1.7",
+    "redux-storage": "^3.0.0",
+    "redux-storage-engine-reactnativeasyncstorage": "^1.0.0",
+    "redux-thunk": "1.0.3"
   }
 }
