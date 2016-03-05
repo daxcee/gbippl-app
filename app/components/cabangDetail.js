@@ -9,14 +9,14 @@ import {
     Linking
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-// import MapView from 'react-native-maps';
+import MapView from 'react-native-maps';
 import Button from 'apsl-react-native-button'
 import WebIntent from 'react-native-webintent'
 import ActionButton from 'react-native-action-button'
 
 let styles = {
     toolbar: {
-        backgroundColor: '#f96332',
+        backgroundColor: '#ff2561',
         height: 60
     },
     heading: {
@@ -31,24 +31,6 @@ let styles = {
     }
 };
 
-// <MapView
-//     style={{height: 150}}
-//     initialRegion={{
-//         latitude: parseFloat(cabang.lat),
-//         longitude: parseFloat(cabang.lng),
-//         latitudeDelta: 0.006,
-//         longitudeDelta: 0.006,
-//     }}>
-//     <MapView.Marker 
-//         coordinate={{
-//             latitude: parseFloat(cabang.lat),
-//             longitude: parseFloat(cabang.lng)
-//         }}
-//         title={cabang.name}
-//         description={cabang.address}
-//     />
-// </MapView>
-
 class CabangDetail extends React.Component {
     constructor(props) {
         super(props);
@@ -59,6 +41,8 @@ class CabangDetail extends React.Component {
     onDirection() {
         const { cabang } = this.props;
         WebIntent.open(`http://maps.google.com/maps?q=loc:${cabang.lat},${cabang.lng} (${cabang.name})`);
+    }
+    componentDidMount() {
     }
     render() {
         const { state, actions, navigator, cabang } = this.props;
@@ -73,9 +57,23 @@ class CabangDetail extends React.Component {
                     />
                 <View style={{flex: 1, backgroundColor: '#fff'}}>
                     <ScrollView>
-                        
-
-
+                        <MapView
+                            style={{height: 150}}
+                            initialRegion={{
+                                latitude: parseFloat(cabang.lat),
+                                longitude: parseFloat(cabang.lng),
+                                latitudeDelta: 0.006,
+                                longitudeDelta: 0.006,
+                            }}>
+                            <MapView.Marker 
+                                coordinate={{
+                                    latitude: parseFloat(cabang.lat),
+                                    longitude: parseFloat(cabang.lng)
+                                }}
+                                title={cabang.name}
+                                description={cabang.address}
+                            />
+                        </MapView>
                         <View style={{padding: 15, marginBottom: 20}}>
                             <Text style={styles.heading}>
                                 {cabang.name}
@@ -88,7 +86,7 @@ class CabangDetail extends React.Component {
                     </ScrollView>
                 </View>
                 <ActionButton 
-                    buttonColor="rgba(231,76,60,1)"
+                    buttonColor="#ff2561"
                     icon={<Icon name="android-compass" size={24} color="#fff"/>}
                     onPress={this.onDirection.bind(this)}
                 />

@@ -1,16 +1,17 @@
 import * as types from './actionTypes';
-import axios from 'axios';
 
 export function fetchEvent() {
     return function(dispatch, getState) {
         return new Promise((resolve, reject) => {
             dispatch(requestEvent());
-            axios.get('http://api.gbippl.id/event')
-                .then((response) => {
-                    var event = response.data;
+            fetch('http://api.gbippl.id/event')
+                .then(response => response.json())
+                .then((json) => {
+                    var event = json;
                     dispatch(receiveEvent(event));
                     resolve(event);
-                }).catch(() => {
+                }).catch((err) => {
+                    console.log(err);
                     resolve(false);
                 });
         });

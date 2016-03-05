@@ -10,8 +10,8 @@ class CabangContainer extends React.Component {
     }
 
     render() {
-        const { state, actions, navigator } = this.props;
-        return (<Cabang cabang={state.cabang} navigator={navigator} {...actions}/>);
+        const { state, actions, navigator, active } = this.props;
+        return (<Cabang cabang={state.cabang} active={active} navigator={navigator} {...actions}/>);
     }
 }
 

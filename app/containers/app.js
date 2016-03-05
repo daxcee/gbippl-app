@@ -17,6 +17,10 @@ import IntroContainer from './introContainer';
 import Home from '../components/home';
 import CabangDetail from '../components/cabangDetail';
 import EventDetail from '../components/eventDetail';
+import PostDetail from '../components/postDetail';
+import PostContainer from './postContainer';
+import MenuDetail from '../components/menuDetail';
+import MenuContainer from './menuContainer';
 
 const load = storage.createLoader(engine);
 load(store)
@@ -29,7 +33,7 @@ store.subscribe(() => {
 
 let _navigator;
 
-StatusBarAndroid.setHexColor('#fa5019');
+StatusBarAndroid.setHexColor('#ff5382');
 BackAndroid.addEventListener('hardwareBackPress', () => {
   if (_navigator && _navigator.getCurrentRoutes().length > 1) {
     _navigator.pop();
@@ -52,6 +56,7 @@ class App extends React.Component {
             <Provider store={store}>
                 <Navigator
                     initialRoute={{name: 'intro'}}
+                    configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromBottom}
                     renderScene={(route, navigator) => {
                         _navigator = navigator;
                         switch (route.name) {
@@ -63,6 +68,10 @@ class App extends React.Component {
                                 return <CabangDetail cabang={route.data} navigator={navigator}/>
                             case 'eventDetail':
                                 return <EventDetail event={route.data} navigator={navigator}/>
+                            case 'postDetail':
+                                return <PostContainer component={PostDetail} post={route.data} navigator={navigator}/>
+                            case 'menuDetail':
+                                return <MenuContainer component={MenuDetail} menu={route.data} type={route.type} navigator={navigator}/>
                             default: 
                                 return <Text>Not Found</Text>;
                         }

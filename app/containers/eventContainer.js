@@ -10,8 +10,8 @@ class EventContainer extends React.Component {
     }
 
     render() {
-        const { state, actions, navigator } = this.props;
-        return (<Event event={state.event} navigator={navigator} {...actions}/>);
+        const { state, actions, navigator, active } = this.props;
+        return (<Event event={state.event} active={active} navigator={navigator} {...actions}/>);
     }
 }
 

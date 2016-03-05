@@ -6,7 +6,8 @@ import React, {
     Image,
     ListView,
     Alert,
-    PullToRefreshViewAndroid
+    PullToRefreshViewAndroid,
+    ProgressBarAndroid,
 } from 'react-native';
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -19,12 +20,12 @@ let styles = {
     }
 };
 
-class Event extends React.Component {
+class Post extends React.Component {
     constructor(props, context) {
         super(props, context);
         var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         this.state = {
-            dataSource: ds.cloneWithRows(props.event),
+            dataSource: ds.cloneWithRows(props.posts),
             isRefreshing: false,
             isLoaded: false
         }
@@ -32,40 +33,61 @@ class Event extends React.Component {
     componentWillReceiveProps(nextProps) {
         if (!this.props.active && nextProps.active) {
             setTimeout(() => {
-                this.props.fetchEvent();
+                this.props.fetchPost();
             });
         }
         this.setState({
-            dataSource: this.state.dataSource.cloneWithRows(nextProps.event),
+            dataSource: this.state.dataSource.cloneWithRows(nextProps.posts),
             isLoaded: true
         });
     }
-    onClickEvent(rowData) {
+    componentDidMount() {
+        setTimeout(() => {
+            this.props.fetchPost();
+        }, 100);
+    }
+    onClickPost(rowData) {
+        this.props.changeActivePost(rowData.id);
         this.props.navigator.push({
-            name: 'eventDetail',
+            name: 'postDetail',
             data: rowData
         });
     }
     _renderRow(rowData, sectionID, rowID) {
         return (
-            <TouchableOpacity onPress={this.onClickEvent.bind(this, rowData)}>
+            <TouchableOpacity onPress={this.onClickPost.bind(this, rowData)}>
                 <View style={RowStyles.rowWrap} renderToHardwareTextureAndroid={true}>
                     <Image source={{uri: rowData.image}} style={RowStyles.rowImage}/>
                     <LinearGradient
                         colors={['transparent', 'black']}
                         style={RowStyles.linearGradient}/>
                     <View style={RowStyles.rowItem}>
+                        <View style={{position: 'absolute', top: 10, right: 10, backgroundColor: '#ff2561', borderRadius: 10, paddingTop: 5, paddingBottom: 5, paddingLeft: 10, paddingRight: 10 }}>
+                            <Text style={{color: 'white', fontSize: 10}}>
+                                {rowData.categories[0] && rowData.categories[0].name}
+                            </Text>
+                        </View>
+                        <View style={{position: 'absolute', top: 10, left: 10}}>
+                            <Text style={{color: 'white', fontSize: 10}}>
+                                {rowData.date}
+                            </Text>
+                        </View>
                         <Text style={RowStyles.rowTitle}>{rowData.title}</Text>
                         <Text numberOfLines={1} style={RowStyles.rowExcerpt}>{rowData.excerpt}</Text>
-                        <Text style={RowStyles.rowMeta}>{rowData.date} • {rowData.time} • {rowData.place}</Text>
                     </View>
                 </View>
             </TouchableOpacity>
         );
     }
+    onToggle() {
+        if (this.state.activeView == 'map')
+            this.setState({activeView: 'list'})
+        else
+            this.setState({activeView: 'map'})
+    }
     onRefresh() {
         this.setState({isRefreshing: true});
-        this.props.fetchEvent().then(() => {
+        this.props.fetchPost().then(() => {
             this.setState({isRefreshing: false});
         });
     }
@@ -80,7 +102,7 @@ class Event extends React.Component {
         )
     }
     render() {
-        if (!this.props.active && this.props.event.length === 0) return null;
+        if (!this.props.active && this.props.posts.length === 0) return null;
         if (!this.state.isLoaded)
             return this.renderLoadingView();
         return (
@@ -89,10 +111,10 @@ class Event extends React.Component {
                     style={{flex: 1}}
                     refreshing={this.state.isRefreshing}
                     onRefresh={this.onRefresh.bind(this)}
-                    colors={['#f7913d', '#f7913d', '#f7913d']}
+                    colors={['#ff2561', '#ff2561', '#ff2561']}
                     progressBackgroundColor={'#fff'}
                     >
-                    <ListView 
+                    <ListView
                         style={{flex: 1}}
                         dataSource={this.state.dataSource}
                         renderRow={this._renderRow.bind(this)}
@@ -104,4 +126,4 @@ class Event extends React.Component {
 }
 
 
-export default Event;
+export default Post;

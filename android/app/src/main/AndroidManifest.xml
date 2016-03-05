@@ -1,7 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.gbippl">
-
+    package="com.gbippl"
+    android:versionCode="2"
+    android:versionName="1.2">
+  
+    <permission
+      android:name="${applicationId}.permission.C2D_MESSAGE"
+      android:protectionLevel="signature" />
+    <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
       android:allowBackup="true"
@@ -11,7 +19,8 @@
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"
-        android:configChanges="keyboard|keyboardHidden|orientation|screenSize">
+        android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+        android:launchMode="singleTop">
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
@@ -21,6 +30,15 @@
       <meta-data
         android:name="com.google.android.geo.API_KEY"
         android:value="AIzaSyCH_V-tKODrTQmCHGF5iMEP2UvRxUbo-Mg"/>
+      <receiver
+        android:name="com.google.android.gms.gcm.GcmReceiver"
+        android:exported="true"
+        android:permission="com.google.android.c2dm.permission.SEND" >
+        <intent-filter>
+            <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            <category android:name="${applicationId}" />
+        </intent-filter>
+      </receiver>
     </application>
 
 </manifest>

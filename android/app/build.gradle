@@ -72,7 +72,7 @@ def enableSeparateBuildPerCPUArchitecture = false
 /**
  * Run Proguard to shrink the Java bytecode in release builds.
  */
-def enableProguardInReleaseBuilds = true
+def enableProguardInReleaseBuilds = false
 
 android {
     compileSdkVersion 23
@@ -82,10 +82,21 @@ android {
         applicationId "com.gbippl"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
         ndk {
             abiFilters "armeabi-v7a", "x86"
+        }
+        manifestPlaceholders = [manifestApplicationId: "${applicationId}",
+                                onesignal_app_id: "f57db3c9-03cb-4584-a7a0-4e8a18e9a24e",
+                                onesignal_google_project_number: "1094183435282"]
+    }
+    signingConfigs {
+        release {
+            storeFile file(MYAPP_RELEASE_STORE_FILE)
+            storePassword MYAPP_RELEASE_STORE_PASSWORD
+            keyAlias MYAPP_RELEASE_KEY_ALIAS
+            keyPassword MYAPP_RELEASE_KEY_PASSWORD
         }
     }
     splits {
@@ -100,6 +111,7 @@ android {
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
         }
     }
     // applicationVariants are e.g. debug, release
@@ -118,6 +130,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-linear-gradient')
     compile project(':react-native-maps')
     compile project(':react-native-vector-icons')
     compile project(':react-native-android-tablayout')
@@ -126,4 +139,6 @@ dependencies {
     compile "com.facebook.react:react-native:0.19.+"
     compile project(':react-native-android-statusbar')
     compile project(':RNWebIntent')
+    compile project(':RNSendIntentModule')
+    compile project(':react-native-onesignal')
 }
