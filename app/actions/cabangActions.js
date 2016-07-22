@@ -32,3 +32,12 @@ export function receiveCabang(cabang) {
         }
     }
 }
+
+export function selectCabang(cabang) {
+    return {
+        type: types.SELECT_CABANG,
+        payload: {
+            cabang
+        }
+    }
+}

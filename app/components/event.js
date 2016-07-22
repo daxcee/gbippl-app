@@ -1,4 +1,5 @@
-import React, {
+import React, {Component} from 'react';
+import {
     View,
     Text,
     TouchableOpacity,
@@ -6,18 +7,22 @@ import React, {
     Image,
     ListView,
     Alert,
-    PullToRefreshViewAndroid
+    RefreshControl,
+    StyleSheet,
+    ToolbarAndroid
 } from 'react-native';
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
-import RowStyles from './rowStyles';
+import RowStyles from '../styles/rowStyles';
+import colors from '../styles/colors';
+import MainStyles from '../styles/mainStyles';
 
-let styles = {
+let styles = StyleSheet.create({
     container: {
         flex: 1
     }
-};
+});
 
 class Event extends React.Component {
     constructor(props, context) {
@@ -26,18 +31,22 @@ class Event extends React.Component {
         this.state = {
             dataSource: ds.cloneWithRows(props.event),
             isRefreshing: false,
-            isLoaded: false
+            finish: false
         }
     }
+    componentDidMount() {
+        setTimeout(() => {
+            if (this.props.event.length == 0) {
+                this.setState({isRefreshing: true});
+                this.props.fetchEvent(1).then(() => {
+                    this.setState({isRefreshing: false});
+                });
+            }
+        });
+    }
     componentWillReceiveProps(nextProps) {
-        if (!this.props.active && nextProps.active) {
-            setTimeout(() => {
-                this.props.fetchEvent();
-            });
-        }
         this.setState({
-            dataSource: this.state.dataSource.cloneWithRows(nextProps.event),
-            isLoaded: true
+            dataSource: this.state.dataSource.cloneWithRows(nextProps.event)
         });
     }
     onClickEvent(rowData) {
@@ -48,14 +57,18 @@ class Event extends React.Component {
     }
     _renderRow(rowData, sectionID, rowID) {
         return (
-            <TouchableOpacity onPress={this.onClickEvent.bind(this, rowData)}>
-                <View style={RowStyles.rowWrap} renderToHardwareTextureAndroid={true}>
-                    <Image source={{uri: rowData.image}} style={RowStyles.rowImage}/>
-                    <LinearGradient
-                        colors={['transparent', 'black']}
-                        style={RowStyles.linearGradient}/>
-                    <View style={RowStyles.rowItem}>
-                        <Text style={RowStyles.rowTitle}>{rowData.title}</Text>
+            <TouchableOpacity onPress={this.onClickEvent.bind(this, rowData)} style={{margin: 10, marginTop: 5, marginBottom: 5, borderRadius: 5}}>
+                <View style={RowStyles.rowWrap}>
+                    <View style={RowStyles.rowImageTitle}>
+                        <Image source={{uri: rowData.image}} style={RowStyles.rowImage}/>
+                        <LinearGradient
+                            colors={['transparent', 'rgba(0,0,0,0.6)']}
+                            style={RowStyles.linearGradient}/>
+                        <View style={RowStyles.rowItem}>
+                            <Text numberOfLines={1} style={RowStyles.rowTitle}>{rowData.title}</Text>
+                        </View>
+                    </View>
+                    <View style={RowStyles.rowInfo}>
                         <Text numberOfLines={1} style={RowStyles.rowExcerpt}>{rowData.excerpt}</Text>
                         <Text style={RowStyles.rowMeta}>{rowData.date} • {rowData.time} • {rowData.place}</Text>
                     </View>
@@ -63,9 +76,20 @@ class Event extends React.Component {
             </TouchableOpacity>
         );
     }
+    _loadMore() {
+        if (!this.state.finish) {
+            this.setState({isRefreshing: true});
+            this.props.fetchEvent(this.props.page + 1).then((event) => {
+                if (event.length === 0) {
+                    this.setState({finish: true});
+                }
+                this.setState({isRefreshing: false});
+            });
+        }
+    }
     onRefresh() {
-        this.setState({isRefreshing: true});
-        this.props.fetchEvent().then(() => {
+        this.setState({isRefreshing: true, finish: false});
+        this.props.fetchEvent(1).then((event) => {
             this.setState({isRefreshing: false});
         });
     }
@@ -80,24 +104,33 @@ class Event extends React.Component {
         )
     }
     render() {
-        if (!this.props.active && this.props.event.length === 0) return null;
-        if (!this.state.isLoaded)
-            return this.renderLoadingView();
+        // if (!this.props.active && this.props.event.length === 0) return null;
+        var {isRefreshing} = this.state;
+
         return (
             <View style={styles.container}>
-                <PullToRefreshViewAndroid
-                    style={{flex: 1}}
-                    refreshing={this.state.isRefreshing}
-                    onRefresh={this.onRefresh.bind(this)}
-                    colors={['#f7913d', '#f7913d', '#f7913d']}
-                    progressBackgroundColor={'#fff'}
-                    >
-                    <ListView 
-                        style={{flex: 1}}
-                        dataSource={this.state.dataSource}
-                        renderRow={this._renderRow.bind(this)}
+                <ToolbarAndroid
+                    title={'Event'}
+                    style={MainStyles.toolbar}
+                    titleColor={'#fff'}
+                    navIcon={{uri: 'back', isStatic: true}}
+                    onIconClicked={() => this.props.navigator.pop()}
                     />
-                </PullToRefreshViewAndroid>
+                <ListView
+                    style={{flex: 1}}
+                    dataSource={this.state.dataSource}
+                    renderRow={this._renderRow.bind(this)}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={isRefreshing}
+                            onRefresh={this.onRefresh.bind(this)}
+                            tintColor={colors.orange}
+                            title="Memuat event..."
+                            colors={[colors.orange, colors.orangeDark, colors.orange]}
+                            progressBackgroundColor="#fff"
+                        />
+                    }
+                    onEndReached={this._loadMore.bind(this)}/>
             </View>
         )
     }

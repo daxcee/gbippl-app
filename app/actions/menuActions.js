@@ -1,33 +1,13 @@
 import * as types from './actionTypes';
 
-export function fetchMenu(type) {
+export function fetchSinglePage(id) {
     return function(dispatch, getState) {
         return new Promise((resolve, reject) => {
-            dispatch(requestMenu());
-            fetch('http://api.gbippl.id/menu/' + type)
-                .then(response => response.json())
-                .then((json) => {
-                    var menus = json;
-                    dispatch(receiveMenu(type, menus));
-                    resolve(menus);
-                }).catch((err) => {
-                    console.log(err);
-                    resolve(false);
-                });
-        });
-    }
-}
-
-export function fetchSingleMenu(type, id) {
-    return function(dispatch, getState) {
-        return new Promise((resolve, reject) => {
-            fetch(`http://api.gbippl.id/menus/${id}`)
+            fetch(`http://api.gbippl.id/posts/${id}`)
                 .then(response => response.json())
                 .then(json => {
-                    console.log('JSON', json);
                     var menu = json;
-                    dispatch(receiveSingleMenu(type, menu));
-                    dispatch(changeActiveMenu(type, menu.id));
+                    dispatch(receiveSinglePage(menu));
                     resolve(menu);
                 })
                 .catch((err) => {
@@ -38,38 +18,20 @@ export function fetchSingleMenu(type, id) {
     }
 }
 
-export function requestMenu() {
+export function receiveSinglePage(menu) {
     return {
-        type: types.REQUEST_MENU,
-    }
-}
-
-export function receiveMenu(type, menus) {
-    return {
-        type: types.RECEIVE_MENU,
+        type: types.RECEIVE_SINGLE_PAGE,
         payload: {
-            type, 
-            menus
-        }
-    }
-}
-
-export function receiveSingleMenu(type, menu) {
-    return {
-        type: types.RECEIVE_SINGLE_MENU,
-        payload: {
-            type, 
             menu
         }
     }
 }
 
-export function changeActiveMenu(type, id) {
+export function changeActivePage(page) {
     return {
-        type: types.CHANGE_ACTIVE_MENU,
+        type: types.CHANGE_ACTIVE_PAGE,
         payload: {
-            type, 
-            id
+            page
         }
     }
 }

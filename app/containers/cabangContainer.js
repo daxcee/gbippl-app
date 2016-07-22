@@ -1,4 +1,4 @@
-import React from 'react-native';
+import React, {Component} from 'react';
 import { bindActionCreators } from 'redux';
 import * as cabangActions from '../actions/cabangActions';
 import { connect } from 'react-redux';

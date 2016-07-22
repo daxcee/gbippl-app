@@ -1,4 +1,4 @@
-import React from 'react-native';
+import React, {Component} from 'react';
 import { bindActionCreators } from 'redux';
 import * as postActions from '../actions/postActions';
 import { connect } from 'react-redux';
@@ -15,6 +15,7 @@ class PostContainer extends React.Component {
         return (
             <Component 
                 posts={state.posts}
+                page={state.page}
                 activePost={state.activePost}
                 active={active}
                 navigator={navigator}

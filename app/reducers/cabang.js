@@ -2,7 +2,8 @@ import * as types from '../actions/actionTypes';
 import update from 'react-addons-update';
 
 const initialState = {
-    cabang: []
+    cabang: [],
+    activeCabang: {}
 }
 
 export default function cabang(state = initialState, action = {}) {
@@ -12,6 +13,10 @@ export default function cabang(state = initialState, action = {}) {
         case types.RECEIVE_CABANG:
             return update(state, {
                 cabang: {$set: action.payload.cabang}
+            });
+        case types.SELECT_CABANG:
+            return update(state, {
+                activeCabang: {$set: action.payload.cabang}
             });
         default:
             return state;

@@ -1,4 +1,4 @@
-import React from 'react-native';
+import React, {Component} from 'react';
 import { bindActionCreators } from 'redux';
 import * as menuActions from '../actions/menuActions';
 import { connect } from 'react-redux';
@@ -13,12 +13,12 @@ class MenuContainer extends React.Component {
         const { state, actions, navigator, active, menu, type } = this.props;
         const Component = this.props.component;
         return (
-            <Component 
-                type={type} 
-                activeMenu={state.activeMenu}
-                menus={state.menus[type]} 
-                active={active} 
-                navigator={navigator} 
+            <Component
+                type={type}
+                activePage={state.activePage}
+                activeCabang={state.activeCabang}
+                active={active}
+                navigator={navigator}
                 {...actions} />
         );
     }
@@ -30,7 +30,7 @@ MenuContainer.defaultProps = {
 }
 
 export default connect(state => ({
-        state: state.menus
+        state: {...state.menus, ...state.cabang}
     }),
     (dispatch) => ({
         actions: bindActionCreators(menuActions, dispatch)

@@ -1,4 +1,5 @@
-import React, {
+import React, {Component} from 'react';
+import {
     View,
     Text,
     TouchableOpacity,
@@ -6,19 +7,24 @@ import React, {
     Image,
     ListView,
     Alert,
-    PullToRefreshViewAndroid,
+    RefreshControl,
     ProgressBarAndroid,
+    StyleSheet,
+    ToolbarAndroid
 } from 'react-native';
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
-import RowStyles from './rowStyles';
+import RowStyles from '../styles/rowStyles';
+import MainStyles from '../styles/mainStyles';
+import colors from '../styles/colors';
+import StringHelper from '../helpers/stringHelper';
 
-let styles = {
+let styles = StyleSheet.create({
     container: {
         flex: 1
     }
-};
+});
 
 class Post extends React.Component {
     constructor(props, context) {
@@ -27,24 +33,19 @@ class Post extends React.Component {
         this.state = {
             dataSource: ds.cloneWithRows(props.posts),
             isRefreshing: false,
-            isLoaded: false
+            finish: false
         }
     }
     componentWillReceiveProps(nextProps) {
-        if (!this.props.active && nextProps.active) {
-            setTimeout(() => {
-                this.props.fetchPost();
-            });
-        }
         this.setState({
             dataSource: this.state.dataSource.cloneWithRows(nextProps.posts),
-            isLoaded: true
         });
     }
     componentDidMount() {
-        setTimeout(() => {
-            this.props.fetchPost();
-        }, 100);
+        this.setState({isRefreshing: true, finish: false});
+        this.props.fetchPost(1).then(() => {
+            this.setState({isRefreshing: false});
+        });
     }
     onClickPost(rowData) {
         this.props.changeActivePost(rowData.id);
@@ -55,25 +56,29 @@ class Post extends React.Component {
     }
     _renderRow(rowData, sectionID, rowID) {
         return (
-            <TouchableOpacity onPress={this.onClickPost.bind(this, rowData)}>
-                <View style={RowStyles.rowWrap} renderToHardwareTextureAndroid={true}>
-                    <Image source={{uri: rowData.image}} style={RowStyles.rowImage}/>
-                    <LinearGradient
-                        colors={['transparent', 'black']}
-                        style={RowStyles.linearGradient}/>
-                    <View style={RowStyles.rowItem}>
-                        <View style={{position: 'absolute', top: 10, right: 10, backgroundColor: '#ff2561', borderRadius: 10, paddingTop: 5, paddingBottom: 5, paddingLeft: 10, paddingRight: 10 }}>
-                            <Text style={{color: 'white', fontSize: 10}}>
-                                {rowData.categories[0] && rowData.categories[0].name}
-                            </Text>
+            <TouchableOpacity onPress={this.onClickPost.bind(this, rowData)} style={{margin: 10, marginTop: 5, marginBottom: 5, borderRadius: 5}}>
+                <View style={RowStyles.rowWrap}>
+                    <View style={RowStyles.rowImageTitle}>
+                        <Image source={{uri: rowData.image}} style={RowStyles.rowImage}/>
+                        <LinearGradient
+                            colors={['transparent', 'rgba(0,0,0,0.6)']}
+                            style={RowStyles.linearGradient}/>
+                        <View style={RowStyles.rowItem}>
+                            <View style={{position: 'absolute', top: 10, right: 10, backgroundColor: colors.orangeDark, borderRadius: 5, paddingTop: 5, paddingBottom: 5, paddingLeft: 10, paddingRight: 10 }}>
+                                <Text style={{color: 'white', fontSize: 10}}>
+                                    {rowData.categories[0] && rowData.categories[0].name}
+                                </Text>
+                            </View>
+                            <View style={{position: 'absolute', top: 10, left: 10}}>
+                                <Text style={{color: 'white', fontSize: 10}}>
+                                    {rowData.date}
+                                </Text>
+                            </View>
+                            <Text numberOfLines={1} style={RowStyles.rowTitle}>{rowData.title}</Text>
                         </View>
-                        <View style={{position: 'absolute', top: 10, left: 10}}>
-                            <Text style={{color: 'white', fontSize: 10}}>
-                                {rowData.date}
-                            </Text>
-                        </View>
-                        <Text style={RowStyles.rowTitle}>{rowData.title}</Text>
-                        <Text numberOfLines={1} style={RowStyles.rowExcerpt}>{rowData.excerpt}</Text>
+                    </View>
+                    <View style={RowStyles.rowInfo}>
+                        <Text numberOfLines={2} style={RowStyles.rowExcerpt}>{StringHelper.cleanText(rowData.excerpt)}</Text>
                     </View>
                 </View>
             </TouchableOpacity>
@@ -85,9 +90,20 @@ class Post extends React.Component {
         else
             this.setState({activeView: 'map'})
     }
+    _loadMore() {
+        if (!this.state.finish) {
+            this.setState({isRefreshing: true});
+            this.props.fetchPost(this.props.page + 1).then((posts) => {
+                if (posts.length === 0) {
+                    this.setState({finish: true});
+                }
+                this.setState({isRefreshing: false});
+            });
+        }
+    }
     onRefresh() {
-        this.setState({isRefreshing: true});
-        this.props.fetchPost().then(() => {
+        this.setState({isRefreshing: true, finish: false});
+        this.props.fetchPost(1).then((posts) => {
             this.setState({isRefreshing: false});
         });
     }
@@ -103,23 +119,31 @@ class Post extends React.Component {
     }
     render() {
         if (!this.props.active && this.props.posts.length === 0) return null;
-        if (!this.state.isLoaded)
-            return this.renderLoadingView();
+        var {isRefreshing} = this.state;
         return (
             <View style={styles.container}>
-                <PullToRefreshViewAndroid
-                    style={{flex: 1}}
-                    refreshing={this.state.isRefreshing}
-                    onRefresh={this.onRefresh.bind(this)}
-                    colors={['#ff2561', '#ff2561', '#ff2561']}
-                    progressBackgroundColor={'#fff'}
-                    >
-                    <ListView
-                        style={{flex: 1}}
-                        dataSource={this.state.dataSource}
-                        renderRow={this._renderRow.bind(this)}
+                <ToolbarAndroid
+                    title={'Event'}
+                    style={MainStyles.toolbar}
+                    titleColor={'#fff'}
+                    navIcon={{uri: 'back', isStatic: true}}
+                    onIconClicked={() => this.props.navigator.pop()}
                     />
-                </PullToRefreshViewAndroid>
+                <ListView
+                    style={{flex: 1}}
+                    dataSource={this.state.dataSource}
+                    renderRow={this._renderRow.bind(this)}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={isRefreshing}
+                            onRefresh={this.onRefresh.bind(this)}
+                            tintColor={colors.orange}
+                            title="Memuat post..."
+                            colors={[colors.orange, colors.orangeDark, colors.orange]}
+                            progressBackgroundColor="#fff"
+                        />
+                    }
+                    onEndReached={this._loadMore.bind(this)}/>
             </View>
         )
     }

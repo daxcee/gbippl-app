@@ -2,39 +2,18 @@ import * as types from '../actions/actionTypes';
 import update from 'react-addons-update';
 
 const initialState = {
-    menus: {
-        komunitas: [],
-        profil: [],
-    },
-    activeMenu: {}
+    activePage: {}
 }
 
 export default function menus(state = initialState, action = {}) {
     switch (action.type) {
-        case types.REQUEST_MENU:
-            return state;
-        case types.RECEIVE_MENU:
+        case types.RECEIVE_SINGLE_PAGE:
             return update(state, {
-                menus: {
-                    [action.payload.type]: {$set: action.payload.menus}
-                }
+                activePage: {$set: action.payload.menu}
             });
-        case types.RECEIVE_SINGLE_MENU:
+        case types.CHANGE_ACTIVE_PAGE:
             return update(state, {
-                menus: {
-                    [action.payload.type]: {$apply: (menus) => {
-                        return menus.map((menu) => {
-                            if (menu.page_id === action.payload.menu.id) {
-                                return Object.assign(menu, action.payload.menu);
-                            }
-                            return menu;
-                        })
-                    }}
-                }
-            });
-        case types.CHANGE_ACTIVE_MENU:
-            return update(state, {
-                activeMenu: {$set: state.menus[action.payload.type].filter((menu) => menu.page_id === action.payload.id)[0] || {}}
+                activePage: {$set: action.payload.page}
             });
         default:
             return state;

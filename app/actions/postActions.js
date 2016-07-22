@@ -1,14 +1,14 @@
 import * as types from './actionTypes';
 
-export function fetchPost() {
+export function fetchPost(page) {
     return function(dispatch, getState) {
         return new Promise((resolve, reject) => {
-            dispatch(requestPost());
-            fetch(`http://api.gbippl.id/posts`)
+            dispatch(requestPost(page));
+            fetch('http://api.gbippl.id/posts?page='+page)
                 .then(response => response.json())
-                .then(json => {
+                .then((json) => {
                     var posts = json;
-                    dispatch(receivePost(posts));
+                    dispatch(receivePost(page, posts));
                     resolve(posts);
                 }).catch((err) => {
                     console.log(err);
@@ -24,7 +24,6 @@ export function fetchSinglePost(id) {
             fetch(`http://api.gbippl.id/posts/${id}`)
                 .then(response => response.json())
                 .then(json => {
-                    console.log('JSON', json);
                     var post = json;
                     dispatch(receiveSinglePost(post));
                     dispatch(changeActivePost(post.id));
@@ -38,20 +37,25 @@ export function fetchSinglePost(id) {
     }
 }
 
-export function requestPost() {
+export function requestPost(page) {
     return {
         type: types.REQUEST_POST,
+        payload: {
+            page
+        }
     }
 }
 
-export function receivePost(posts) {
+export function receivePost(page, posts) {
     return {
         type: types.RECEIVE_POST,
         payload: {
+            page,
             posts
         }
     }
 }
+
 
 export function receiveSinglePost(post) {
     return {

@@ -1,4 +1,4 @@
-import React from 'react-native';
+import React, {Component} from 'react';
 import { bindActionCreators } from 'redux';
 import * as eventActions from '../actions/eventActions';
 import { connect } from 'react-redux';
@@ -11,7 +11,7 @@ class EventContainer extends React.Component {
 
     render() {
         const { state, actions, navigator, active } = this.props;
-        return (<Event event={state.event} active={active} navigator={navigator} {...actions}/>);
+        return (<Event event={state.event} page={state.page} active={active} navigator={navigator} {...actions}/>);
     }
 }
 

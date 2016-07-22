@@ -1,4 +1,5 @@
-import React, {
+import React, {Component} from 'react';
+import {
     View,
     Text,
     TouchableOpacity,
@@ -6,19 +7,21 @@ import React, {
     Image,
     ListView,
     Alert,
-    PullToRefreshViewAndroid
+    RefreshControl,
+    StyleSheet
 } from 'react-native';
 import MapView from 'react-native-maps';
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
-import RowStyles from './rowStyles';
+import RowStyles from '../styles/rowStyles';
+import colors from '../styles/colors';
 
-let styles = {
+let styles = StyleSheet.create({
     container: {
         flex: 1
     }
-};
+});
 
 class Cabang extends React.Component {
     constructor(props, context) {
@@ -27,13 +30,19 @@ class Cabang extends React.Component {
         this.state = {
             activeView: 'list',
             dataSource: ds.cloneWithRows(props.cabang),
-            isRefreshing: false
+            isRefreshing: false,
+            initialPosition: {coords: {latitude: 0, longitude: 0}}
         }
     }
     componentWillReceiveProps(nextProps) {
         if (!this.props.active && nextProps.active) {
             setTimeout(() => {
-                this.props.fetchCabang();
+                if (this.props.cabang.length === 0) {
+                    this.setState({isRefreshing: true});
+                    this.props.fetchCabang().then(() => {
+                        this.setState({isRefreshing: false});
+                    });
+                }
             });
         }
         this.setState({
@@ -41,9 +50,14 @@ class Cabang extends React.Component {
         });
     }
     componentDidMount() {
-        // setTimeout(() => {
-        //     this.props.fetchCabang();
-        // });
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                var initialPosition = position;
+                this.setState({initialPosition});
+            },
+            (error) => console.log(error.message),
+            {enableHighAccuracy: false, timeout: 20000, maximumAge: 1000}
+        );
     }
     onClickCabang(rowData) {
         this.props.navigator.push({
@@ -53,15 +67,19 @@ class Cabang extends React.Component {
     }
     _renderRow(rowData, sectionID, rowID) {
         return (
-            <TouchableOpacity onPress={this.onClickCabang.bind(this, rowData)}>
+            <TouchableOpacity onPress={this.onClickCabang.bind(this, rowData)} style={{margin: 10, marginTop: 5, marginBottom: 5, borderRadius: 5}}>
                 <View style={RowStyles.rowWrap}>
-                    <Image source={{uri: rowData.image}} style={RowStyles.rowImage}/>
-                    <LinearGradient
-                        colors={['transparent', 'black']}
-                        style={RowStyles.linearGradient}/>
-                    <View style={RowStyles.rowItem}>
-                        <Text style={RowStyles.rowTitle}>{rowData.name}</Text>
-                        <Text style={RowStyles.rowExcerpt}>{rowData.address}</Text>
+                    <View style={RowStyles.rowImageTitle}>
+                        <Image source={{uri: rowData.image}} style={RowStyles.rowImage}/>
+                        <LinearGradient
+                            colors={['transparent', 'rgba(0,0,0,0.6)']}
+                            style={RowStyles.linearGradient}/>
+                        <View style={RowStyles.rowItem}>
+                            <Text numberOfLines={1} style={RowStyles.rowTitle}>{rowData.name}</Text>
+                        </View>
+                    </View>
+                    <View style={RowStyles.rowInfo}>
+                        <Text numberOfLines={2} style={RowStyles.rowExcerpt}>{rowData.address}</Text>
                     </View>
                 </View>
             </TouchableOpacity>
@@ -81,6 +99,7 @@ class Cabang extends React.Component {
     }
     render() {
         if (!this.props.active && this.props.cabang.length === 0) return null;
+        var {isRefreshing} = this.state;
         return (
             <View style={styles.container}>
                 {this.state.activeView == 'map' ?
@@ -92,10 +111,18 @@ class Cabang extends React.Component {
                             latitudeDelta: 0.08,
                             longitudeDelta: 0.08,
                         }}>
+                        <MapView.Marker 
+                            coordinate={{
+                                latitude: parseFloat(this.state.initialPosition && this.state.initialPosition.coords.latitude || 0),
+                                longitude: parseFloat(this.state.initialPosition && this.state.initialPosition.coords.longitude || 0),
+                            }}
+                            pinColor={'green'}
+                            title={'Posisi Saya'}
+                            description={'Posisi Sekarang'} />
                         {this.props.cabang.map((marker, i) => {
                             return (
                                 <MapView.Marker
-                                    key={i} 
+                                    key={i}
                                     coordinate={{
                                         latitude: parseFloat(marker.lat),
                                         longitude: parseFloat(marker.lng)
@@ -107,26 +134,28 @@ class Cabang extends React.Component {
                         })}
                     </MapView>
                     :
-                    <PullToRefreshViewAndroid
+                    <ListView
                         style={{flex: 1}}
-                        refreshing={this.state.isRefreshing}
-                        onRefresh={this.onRefresh.bind(this)}
-                        colors={['#f7913d', '#f7913d', '#f7913d']}
-                        progressBackgroundColor={'#fff'}
-                        >
-                        <ListView 
-                            style={{flex: 1}}
-                            dataSource={this.state.dataSource}
-                            renderRow={this._renderRow.bind(this)}
-                        />
-                    </PullToRefreshViewAndroid>}
-                <ActionButton 
-                    buttonColor="#ff2561"
+                        dataSource={this.state.dataSource}
+                        renderRow={this._renderRow.bind(this)}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={isRefreshing}
+                                onRefresh={this.onRefresh.bind(this)}
+                                tintColor={colors.orange}
+                                title="Memuat event..."
+                                colors={[colors.orange, colors.orangeDark, colors.orange]}
+                                progressBackgroundColor="#fff"
+                            />
+                        }/>
+                    }
+                <ActionButton
+                    buttonColor={colors.orange}
                     onPress={this.onToggle.bind(this)}
                     icon={this.state.activeView == 'map' ?
-                        <Icon name="android-list" size={24} color="#fff"/>
+                        <Icon name="ios-list" size={24} color="#fff"/>
                         :
-                        <Icon name="ios-location" size={24} color="#fff"/>}
+                        <Icon name="md-pin" size={24} color="#fff"/>}
                 />
             </View>
         )

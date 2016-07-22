@@ -1,20 +1,23 @@
-import React, {
+import React, {Component} from 'react';
+import {
     View,
     Text,
     TouchableHighlight,
-    ViewPagerAndroid,
     Image,
-    Dimensions
+    Dimensions,
+    StyleSheet,
+    Alert
 } from 'react-native';
 
-import Button from 'apsl-react-native-button'
+import Button from 'apsl-react-native-button';
+import ViewPager from 'react-native-viewpager';
+import colors from '../styles/colors';
 
-let styles = {
+let styles = StyleSheet.create({
     viewPager: {
         flex: 1,
     },
     pageStyle: {
-        // alignItems: 'center',
         flex: 1,
     },
     container: {
@@ -34,34 +37,56 @@ let styles = {
         flex: 1,
         backgroundColor: '#eeeeee',
     },
-};
+});
 
+var splashImage = require('../../img/splash1.png');
+var defaultSplash = {
+    id: 0,
+    image: splashImage
+};
 
 class Intro extends React.Component {
     constructor(props, context) {
         super(props, context);
+        var dataSource = new ViewPager.DataSource({
+            pageHasChanged: (p1, p2) => p1.id !== p2.id,
+        });
         this.state = {
             page: 0,
+            loaded: false,
             progress: {
                 position: 0,
                 offset: 0,
             },
+            dataSource: dataSource.cloneWithPages([defaultSplash]),
         }
     }
     componentDidMount() {
-        this.timer = setInterval(() => {
-            let currentPage = this.state.page;
-            let nextPage = currentPage + 1;
-            if (nextPage > 4) nextPage = 0;
-            this.viewPager.setPage(nextPage);
-            this.setState({page: nextPage});
-        }, 3000);
+        
     }
     componentWillUnmount() {
-        clearInterval(this.timer);
-        this.timer = null;
+        
     }
-    
+    _renderPage(data, pageID) {
+        return (
+            <View key={data.id} style={styles.pageStyle}>
+                <Image source={data.image} style={{width: Dimensions.get('window').width, height: Dimensions.get('window').height}} resizeMode={'cover'}/>
+            </View>
+        );
+    }
+    componentDidMount() {
+        fetch('http://api.gbippl.id/splash')
+            .then(response => response.json())
+            .then(json => {
+                json = json.map(item => {
+                    return Object.assign({}, item, {image: {uri: item.image}});
+                });
+                this.setState({
+                    dataSource: this.state.dataSource.cloneWithPages([defaultSplash, ...json]),
+                    loaded: true
+                });
+            });
+    }
     onPageSelected(e) {
         this.setState({page: e.nativeEvent.position});
     }
@@ -72,37 +97,28 @@ class Intro extends React.Component {
 
     onEnterApp() {
         this.props.changeIntro();
-        this.props.navigator.resetTo({
-            name: 'home',
-        });
+        if (this.props.activeCabang.name) {
+            this.props.navigator.resetTo({
+                name: 'wartaPage',
+            });
+        } else {
+            this.props.navigator.resetTo({
+                name: 'cabangPage',
+            });
+        }
     }
     render() {
         return (
             <View style={styles.container}>
-                <ViewPagerAndroid
+                <ViewPager
                     style={styles.viewPager}
-                    initialPage={0}
-                    onPageScroll={this.onPageScroll.bind(this)}
-                    onPageSelected={this.onPageSelected.bind(this)}
-                    ref={viewPager => { this.viewPager = viewPager; }}>
-                    <View style={styles.pageStyle}>
-                        <Image source={require('../../img/splash1.jpg')} style={{width: Dimensions.get('window').width, height: Dimensions.get('window').height}} resizeMode={'cover'}/>
-                    </View>
-                    <View style={styles.pageStyle}>
-                        <Image source={require('../../img/peka.jpg')} style={{width: Dimensions.get('window').width, height: Dimensions.get('window').height}} resizeMode={'cover'}/>
-                    </View>
-                    <View style={styles.pageStyle}>
-                        <Image source={require('../../img/genneo.jpg')} style={{width: Dimensions.get('window').width, height: Dimensions.get('window').height}} resizeMode={'cover'}/>
-                    </View>
-                    <View style={styles.pageStyle}>
-                        <Image source={require('../../img/wbi.jpg')} style={{width: Dimensions.get('window').width, height: Dimensions.get('window').height}} resizeMode={'cover'}/>
-                    </View>
-                    <View style={styles.pageStyle}>
-                        <Image source={require('../../img/mk.jpg')} style={{width: Dimensions.get('window').width, height: Dimensions.get('window').height}} resizeMode={'cover'}/>
-                    </View>
-                </ViewPagerAndroid>
-                <View style={{position: 'absolute', bottom: 80, left: 0, right: 0, alignItems: 'flex-start'}}>
-                    <Button onPress={this.onEnterApp.bind(this)} style={{backgroundColor: '#ff2561', borderRadius: 40, margin: 23, padding: 30, borderWidth: 0}} textStyle={{color: '#fff', fontSize: 24, fontFamily: 'Gotham-Book'}}>
+                    dataSource={this.state.dataSource}
+                    renderPage={this._renderPage}
+                    isLoop={this.state.loaded}
+                    autoPlay={this.state.loaded} />
+                
+                <View style={{position: 'absolute', bottom: 30, left: 0, right: 0, alignItems: 'flex-start'}}>
+                    <Button onPress={this.onEnterApp.bind(this)} style={{backgroundColor: colors.orangeDark, borderRadius: 40, margin: 23, padding: 30, borderWidth: 0}} textStyle={{color: '#fff', fontSize: 18}}>
                         Masuk Aplikasi
                     </Button>
                 </View>
