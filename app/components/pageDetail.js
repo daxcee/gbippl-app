@@ -9,7 +9,8 @@ import {
     Linking,
     StyleSheet,
     TouchableOpacity,
-    Platform
+    Platform,
+    WebView
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -18,8 +19,9 @@ import WebIntent from 'react-native-webintent';
 import ActionButton from 'react-native-action-button';
 import HTMLView from 'react-native-htmlview';
 import MainStyles from '../styles/mainStyles';
-import WebContainer from '../utils/WebContainer';
 import LinearGradient from 'react-native-linear-gradient';
+import Toolbar from '../uikit/Toolbar';
+import { connect } from 'react-redux';
 
 let styles = StyleSheet.create({
     heading: {
@@ -54,51 +56,46 @@ class PageDetail extends React.Component {
         });
     }
     componentDidMount() {
-        console.log('BUKA', this.props.activePage);
         this.props.fetchSinglePage(this.props.activePage.id);
     }
     render() {
-        const { state, actions, navigator, activePage, activeCabang } = this.props;
+        const { state, actions, navigator, activePage, activeCabang, menus } = this.props;
+        var content = `
+        <style>
+            body, html {
+                font-family: "Arial", Serif, Sans-Serif;
+                margin: 0;
+                padding: 0;
+                font-size: ${menus.fontSize}px;
+            }
+        </style>
+        <div style="height: 180px; background: url(${activePage.image}) no-repeat; background-size: cover; background-position: center center"></div>
+        <div style="padding: 10px">
+            ${activePage.content || ''}
+        </div>`;
         return (
             <View style={{flex: 1}}>
-                {Platform.OS === 'android' ? 
-                    <ToolbarAndroid
-                        title={activePage.title + ' - ' + activeCabang.name}
-                        style={MainStyles.toolbar}
-                        titleColor={'#fff'}
-                        navIcon={{uri: 'back', isStatic: true}}
-                        onIconClicked={() => this.props.navigator.pop()}
-                        />
-                    :
-                    <View style={[MainStyles.toolbar, {alignItems: 'center', justifyContent: 'center'}]}>
-                        <Text numberOfLines={1} style={MainStyles.toolbarText}>{activePage.title}</Text>
-                    </View>}
+                <Toolbar
+                    title={activePage.title + ' - ' + activeCabang.name}
+                    style={MainStyles.toolbar}
+                    titleColor={'#fff'}
+                    navIconName={'md-arrow-back'}
+                    onIconClicked={() => this.props.navigator.pop()}
+                    />
                 <View style={{flex: 1, backgroundColor: '#fff'}}>
-                    <ScrollView>
-                        {activePage.image ?
-                            <TouchableOpacity onPress={this.toggleImageHeight.bind(this)}>
-                                <View style={{height: this.state.imageHeight}}>
-                                    <Image source={{uri: activePage.image}} style={{resizeMode: this.state.imageResize, height: this.state.imageHeight, left: 0, right: 0}}/>
-                                    <LinearGradient
-                                        colors={['transparent', 'rgba(0,0,0,0.6)']}
-                                        style={{position: 'absolute',left: 0,right: 0,top: 0,height: this.state.imageHeight}}/>
-                                    <View style={{position: 'absolute',left: 0,right: 0,top: 0,height: this.state.imageHeight,padding: 15,justifyContent: 'flex-end'}}>
-                                        <Text style={{color: '#fff',fontSize: 20}}>{activePage.title}</Text>
-                                    </View>
-                                </View>
-                            </TouchableOpacity>
-                            : null}
-                        <View>
-                            <WebContainer
-                                style={{flex: 1}}
-                                html={activePage.content}
-                                autoHeight={true} />
-                        </View>
-                    </ScrollView>
+                    <WebView
+                        style={{flex: 1}}
+                        source={{html: content}}
+                        />
                 </View>
             </View>
         );
     }
 }
+
+PageDetail = connect(state => ({
+        menus: state.menus
+    })
+)(PageDetail);
 
 export default PageDetail;

@@ -70,7 +70,7 @@ class Cabang extends React.Component {
             <TouchableOpacity onPress={this.onClickCabang.bind(this, rowData)} style={{margin: 10, marginTop: 5, marginBottom: 5, borderRadius: 5}}>
                 <View style={RowStyles.rowWrap}>
                     <View style={RowStyles.rowImageTitle}>
-                        <Image source={{uri: rowData.image}} style={RowStyles.rowImage}/>
+                        <Image source={{uri: rowData.image || ''}} style={RowStyles.rowImage}/>
                         <LinearGradient
                             colors={['transparent', 'rgba(0,0,0,0.6)']}
                             style={RowStyles.linearGradient}/>

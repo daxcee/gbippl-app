@@ -20,6 +20,24 @@ export function fetchPeka(page) {
     }
 }
 
+export function fetchPekaPost() {
+    return function(dispatch, getState) {
+        return new Promise((resolve, reject) => {
+            fetch('http://api.gbippl.id/pekapost')
+                .then(response => response.json())
+                .then((json) => {
+                    var pinned = json;
+                    dispatch(receivePekaPost(pinned));
+                    resolve(pinned);
+                }).catch((err) => {
+                    console.log(err);
+                    resolve(false);
+                });
+        });
+    }
+}
+
+
 export function requestPeka(page) {
     return {
         type: types.REQUEST_PEKA,
@@ -35,6 +53,15 @@ export function receivePeka(page, peka) {
         payload: {
             page,
             peka
+        }
+    }
+}
+
+export function receivePekaPost(pinned) {
+    return {
+        type: types.RECEIVE_PEKA_POST,
+        payload: {
+            pinned
         }
     }
 }

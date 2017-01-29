@@ -12,7 +12,8 @@ export default function cabang(state = initialState, action = {}) {
             return state;
         case types.RECEIVE_CABANG:
             return update(state, {
-                cabang: {$set: action.payload.cabang}
+                cabang: {$set: action.payload.cabang},
+                activeCabang: {$set: action.payload.cabang.filter(cabang => cabang.id == state.activeCabang.id)[0]}
             });
         case types.SELECT_CABANG:
             return update(state, {

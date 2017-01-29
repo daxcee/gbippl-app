@@ -17,6 +17,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import RowStyles from '../styles/rowStyles';
 import colors from '../styles/colors';
 import MainStyles from '../styles/mainStyles';
+import Toolbar from '../uikit/Toolbar';
 
 let styles = StyleSheet.create({
     container: {
@@ -59,17 +60,12 @@ class Event extends React.Component {
         return (
             <TouchableOpacity onPress={this.onClickEvent.bind(this, rowData)} style={{margin: 10, marginTop: 5, marginBottom: 5, borderRadius: 5}}>
                 <View style={RowStyles.rowWrap}>
-                    <View style={RowStyles.rowImageTitle}>
-                        <Image source={{uri: rowData.image}} style={RowStyles.rowImage}/>
-                        <LinearGradient
-                            colors={['transparent', 'rgba(0,0,0,0.6)']}
-                            style={RowStyles.linearGradient}/>
-                        <View style={RowStyles.rowItem}>
-                            <Text numberOfLines={1} style={RowStyles.rowTitle}>{rowData.title}</Text>
-                        </View>
+                    <View style={RowStyles.rowImageWrap}>
+                        <Image source={{uri: rowData.image || ''}} style={RowStyles.rowImage}/>
                     </View>
                     <View style={RowStyles.rowInfo}>
-                        <Text numberOfLines={1} style={RowStyles.rowExcerpt}>{rowData.excerpt}</Text>
+                        <Text style={RowStyles.rowTitle}>{rowData.title}</Text>
+                        <Text numberOfLines={2} style={RowStyles.rowExcerpt}>{rowData.excerpt}</Text>
                         <Text style={RowStyles.rowMeta}>{rowData.date} • {rowData.time} • {rowData.place}</Text>
                     </View>
                 </View>
@@ -109,11 +105,11 @@ class Event extends React.Component {
 
         return (
             <View style={styles.container}>
-                <ToolbarAndroid
+                <Toolbar
                     title={'Event'}
                     style={MainStyles.toolbar}
                     titleColor={'#fff'}
-                    navIcon={{uri: 'back', isStatic: true}}
+                    navIconName={'md-arrow-back'}
                     onIconClicked={() => this.props.navigator.pop()}
                     />
                 <ListView

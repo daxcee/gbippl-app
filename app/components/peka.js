@@ -9,7 +9,9 @@ import {
     Alert,
     RefreshControl,
     StyleSheet,
-    ToolbarAndroid
+    ToolbarAndroid,
+    ScrollView,
+    Switch
 } from 'react-native';
 import MapView from 'react-native-maps';
 import ActionButton from 'react-native-action-button';
@@ -18,14 +20,39 @@ import LinearGradient from 'react-native-linear-gradient';
 import RowStyles from '../styles/rowStyles';
 import colors from '../styles/colors';
 import StringHelper from '../helpers/stringHelper';
-import CheckBox from 'react-native-checkbox';
 import MainStyles from '../styles/mainStyles';
 import Grid from '../components/grid';
+import Toolbar from '../uikit/Toolbar';
+import Swiper from 'react-native-swiper';
+import * as postActions from '../actions/postActions';
 
 let styles = StyleSheet.create({
     container: {
-        flex: 1
-    }
+        flex: 1,
+        backgroundColor: '#eee'
+    },
+    slide: {
+        flex: 1,
+        backgroundColor: colors.orange,
+        height: 170,
+        justifyContent: 'flex-end',
+        alignItems: 'center'
+    },
+    image: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        left: 0,
+        height: 170,
+    },
+    heading: {
+        textAlign: 'center',
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#fff',
+        marginBottom: 18,
+        backgroundColor: 'transparent'
+    },
 });
 
 class Peka extends React.Component {
@@ -40,6 +67,9 @@ class Peka extends React.Component {
     }
     componentDidMount() {
         this.setState({isRefreshing: true});
+        this.props.fetchPekaPost().then(() => {
+            this.setState({isRefreshing: false});
+        });
         this.props.fetchPeka(1).then(() => {
             this.setState({isRefreshing: false});
         });
@@ -64,7 +94,7 @@ class Peka extends React.Component {
             <TouchableOpacity onPress={this.onClickPeka.bind(this, rowData)} style={{margin: 10, marginTop: 5, marginBottom: 5, borderRadius: 5}}>
                 <View style={RowStyles.rowWrap}>
                     <View style={RowStyles.rowImageTitle}>
-                        <Image source={{uri: rowData.image}} style={RowStyles.rowImage}/>
+                        <Image source={{uri: rowData.image || ''}} style={RowStyles.rowImage}/>
                         <LinearGradient
                             colors={['transparent', 'rgba(0,0,0,0.6)']}
                             style={RowStyles.linearGradient}/>
@@ -102,8 +132,36 @@ class Peka extends React.Component {
             this.setState({isRefreshing: false});
         });
     }
+    selectPost(post) {
+        this.props.changeActivePost(post);
+        this.props.navigator.push({
+            name: 'postDetail',
+            data: post
+        });
+    }
+    _renderPage(data) {
+        return (
+            <TouchableOpacity key={data.id} onPress={this.selectPost.bind(this, data)} style={{flex: 1}}>
+                <View style={styles.slide}>
+                    <Image source={{uri: data.image}} style={styles.image} />
+                    <Text style={styles.heading}>{data.title}</Text>
+                </View>
+            </TouchableOpacity>
+        );
+    }
     render() {
         var {isRefreshing} = this.state;
+        var swiper = (
+            <Swiper
+                height={170}
+                loop={this.props.pinned.length > 0}
+                autoplay={this.props.pinned.length > 0}
+                key={'swiper-'+this.props.pinned.length}>
+                {this.props.pinned.map(post => {
+                    return this._renderPage(post);
+                })}
+            </Swiper>
+        );
         var gridItems = this.props.peka.map(peka => {
             return {
                 name: peka.title,
@@ -113,11 +171,11 @@ class Peka extends React.Component {
         });
         return (
             <View style={styles.container}>
-                <ToolbarAndroid
+                <Toolbar
                     title={'Peka'}
                     style={MainStyles.toolbar}
                     titleColor={'#fff'}
-                    navIcon={{uri: 'back', isStatic: true}}
+                    navIconName={'md-arrow-back'}
                     onIconClicked={() => this.props.navigator.pop()}
                     />
                 {this.state.activeView == 'map' ?
@@ -162,15 +220,18 @@ class Peka extends React.Component {
                         onRefresh={this.onRefresh.bind(this)}
                         onEndReached={this._loadMore.bind(this)}
                         header={(
-                            <View style={{height: 40, padding: 8, backgroundColor: '#fff', marginBottom: 10}}>
-                                <CheckBox
-                                    label='Tampilkan Peka Semua Cabang'
-                                    checked={this.props.isAll}
-                                    onChange={(checked) => {
-                                        this.props.setIsAll(checked);
-                                        this.onRefresh();
-                                    }}
-                                    />
+                            <View>
+                                {swiper}
+                                <View style={{height: 40, padding: 8, backgroundColor: '#fff', marginBottom: 10, flexDirection: 'row'}}>
+                                    <Switch
+                                        value={this.props.isAll}
+                                        onValueChange={(checked) => {
+                                            this.props.setIsAll(checked);
+                                            this.onRefresh();
+                                        }}
+                                        />
+                                    <Text>Tampilkan Peka Semua Cabang</Text>
+                                </View>
                             </View>
                         )}
                         />

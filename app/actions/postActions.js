@@ -1,5 +1,22 @@
 import * as types from './actionTypes';
 
+export function fetchAppSettings() {
+    return function(dispatch, getState) {
+        return new Promise((resolve, reject) => {
+            fetch('http://api.gbippl.id/appsettings')
+                .then(response => response.json())
+                .then((json) => {
+                    var appSettings = json;
+                    console.log('APP SETTINGS', appSettings);
+                    dispatch(receiveAppSettings(appSettings));
+                    resolve(appSettings);
+                }).catch((err) => {
+                    resolve(false);
+                });
+        });
+    }
+}
+
 export function fetchPost(page) {
     return function(dispatch, getState) {
         return new Promise((resolve, reject) => {
@@ -11,7 +28,22 @@ export function fetchPost(page) {
                     dispatch(receivePost(page, posts));
                     resolve(posts);
                 }).catch((err) => {
-                    console.log(err);
+                    resolve(false);
+                });
+        });
+    }
+}
+
+export function fetchPinned() {
+    return function(dispatch, getState) {
+        return new Promise((resolve, reject) => {
+            fetch('http://api.gbippl.id/pinned')
+                .then(response => response.json())
+                .then((json) => {
+                    var posts = json;
+                    dispatch(receivePinned(posts));
+                    resolve(posts);
+                }).catch((err) => {
                     resolve(false);
                 });
         });
@@ -26,7 +58,7 @@ export function fetchSinglePost(id) {
                 .then(json => {
                     var post = json;
                     dispatch(receiveSinglePost(post));
-                    dispatch(changeActivePost(post.id));
+                    dispatch(changeActivePost(post));
                     resolve(post);
                 })
                 .catch((err) => {
@@ -56,6 +88,24 @@ export function receivePost(page, posts) {
     }
 }
 
+export function receivePinned(pinned) {
+    return {
+        type: types.RECEIVE_PINNED,
+        payload: {
+            pinned
+        }
+    }
+}
+
+export function receiveAppSettings(appSettings) {
+    return {
+        type: types.RECEIVE_APP_SETTINGS,
+        payload: {
+            appSettings
+        }
+    }
+}
+
 
 export function receiveSinglePost(post) {
     return {
@@ -66,11 +116,11 @@ export function receiveSinglePost(post) {
     }
 }
 
-export function changeActivePost(id) {
+export function changeActivePost(post) {
     return {
         type: types.CHANGE_ACTIVE_POST,
         payload: {
-            id
+            post
         }
     }
 }

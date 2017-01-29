@@ -21,7 +21,7 @@ import ActionButton from 'react-native-action-button';
 import MainStyles from '../styles/mainStyles';
 import RowStyles from '../styles/rowStyles';
 import LinearGradient from 'react-native-linear-gradient';
-
+import Toolbar from '../uikit/Toolbar';
 
 let styles = StyleSheet.create({
     heading: {
@@ -61,7 +61,7 @@ class CabangDetail extends React.Component {
             <TouchableOpacity key={menu.id} onPress={this.onClickMenu.bind(this, menu)} style={{margin: 10, marginTop: 5, marginBottom: 5, borderRadius: 5}}>
                 <View style={RowStyles.rowWrap}>
                     <View style={RowStyles.rowImageTitle}>
-                        <Image source={{uri: menu.image}} style={RowStyles.rowImage}/>
+                        <Image source={{uri: menu.image || ''}} style={RowStyles.rowImage}/>
                         <LinearGradient
                             colors={['transparent', 'rgba(0,0,0,0.6)']}
                             style={RowStyles.linearGradient}/>
@@ -81,21 +81,16 @@ class CabangDetail extends React.Component {
         
         return (
             <View style={{flex: 1}}>
-                {Platform.OS === 'android' ? 
-                    <ToolbarAndroid
-                        title={cabang.name}
-                        style={MainStyles.toolbar}
-                        titleColor={'#fff'}
-                        navIcon={{uri: 'back', isStatic: true}}
-                        onIconClicked={() => this.props.navigator.pop()}
-                        />
-                    :
-                    <View style={[MainStyles.toolbar, {alignItems: 'center', justifyContent: 'center'}]}>
-                        <Text numberOfLines={1} style={MainStyles.toolbarText}>{cabang.name}</Text>
-                    </View>}
+                <Toolbar
+                    title={cabang.name}
+                    style={MainStyles.toolbar}
+                    titleColor={'#fff'}
+                    navIconName={'md-arrow-back'}
+                    onIconClicked={() => this.props.navigator.pop()}
+                    />
                 <View style={{flex: 1, backgroundColor: '#fff'}}>
                     <ScrollView>
-                        <Image source={{uri: cabang.image}} style={{resizeMode: 'cover', height: 150, left: 0, right: 0}}/>
+                        <Image source={{uri: cabang.image || ''}} style={{resizeMode: 'cover', height: 150, left: 0, right: 0}}/>
                         <View style={{padding: 15, marginBottom: 20}}>
                             <Text style={styles.address}>
                                 {cabang.address}

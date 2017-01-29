@@ -3,6 +3,8 @@ import update from 'react-addons-update';
 
 const initialState = {
     posts: [],
+    pinned: [],
+    appSettings: {},
     activePost: {},
     page: 1
 }
@@ -25,6 +27,14 @@ export default function posts(state = initialState, action = {}) {
                 }},
                 page: {$set: payload.page}
             });
+        case types.RECEIVE_APP_SETTINGS:
+            return update(state, {
+                appSettings: {$set: payload.appSettings}
+            });
+        case types.RECEIVE_PINNED:
+            return update(state, {
+                pinned: {$set: payload.pinned}
+            });
         case types.RECEIVE_SINGLE_POST:
             return update(state, {
                 activePost: {$set: action.payload.post},
@@ -39,7 +49,7 @@ export default function posts(state = initialState, action = {}) {
             });
         case types.CHANGE_ACTIVE_POST:
             return update(state, {
-                activePost: {$set: state.posts.filter((post) => post.id === action.payload.id)[0] || {}}
+                activePost: {$set: action.payload.post}
             });
         default:
             return state;

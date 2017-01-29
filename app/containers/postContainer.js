@@ -15,6 +15,8 @@ class PostContainer extends React.Component {
         return (
             <Component 
                 posts={state.posts}
+                pinned={state.pinned}
+                appSettings={state.appSettings}
                 page={state.page}
                 activePost={state.activePost}
                 active={active}

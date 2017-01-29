@@ -19,6 +19,7 @@ import HTMLView from 'react-native-htmlview';
 if (Platform.OS === 'android')
     var SendIntentAndroid = require('react-native-send-intent');
 import MainStyles from '../styles/mainStyles';
+import Toolbar from '../uikit/Toolbar';
 
 let styles = StyleSheet.create({
     heading: {
@@ -68,23 +69,18 @@ class EventDetail extends React.Component {
         const { state, actions, navigator, event } = this.props;
         return (
             <View style={{flex: 1}}>
-                {Platform.OS === 'android' ? 
-                    <ToolbarAndroid
-                        title={event.title}
-                        style={MainStyles.toolbar}
-                        titleColor={'#fff'}
-                        navIcon={{uri: 'back', isStatic: true}}
-                        onIconClicked={() => this.props.navigator.pop()}
-                        />
-                    :
-                    <View style={[MainStyles.toolbar, {alignItems: 'center', justifyContent: 'center'}]}>
-                        <Text numberOfLines={1} style={MainStyles.toolbarText}>{event.title}</Text>
-                    </View>}
+                <Toolbar
+                    title={event.title}
+                    style={MainStyles.toolbar}
+                    titleColor={'#fff'}
+                    navIconName={'md-arrow-back'}
+                    onIconClicked={() => this.props.navigator.pop()}
+                    />
                 <View style={{flex: 1, backgroundColor: '#fff'}}>
                     <ScrollView>
                         {event.image ?
                             <TouchableOpacity onPress={this.toggleImageHeight.bind(this)}>
-                                <Image source={{uri: event.image}} style={{resizeMode: this.state.imageResize, height: this.state.imageHeight, left: 0, right: 0}}/>
+                                <Image source={{uri: event.image || ''}} style={{resizeMode: this.state.imageResize, height: this.state.imageHeight, left: 0, right: 0}}/>
                             </TouchableOpacity>
                             : null}
                         <View style={{padding: 15, marginBottom: 20}}>

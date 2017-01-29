@@ -14,27 +14,30 @@ var RowStyles = StyleSheet.create({
         justifyContent: 'flex-end'
     },
     rowTitle: {
-        color: '#fff',
+        color: '#000',
         fontSize: 20,
     },
     rowWrap: {
         borderBottomWidth: 1,
         borderColor: '#ddd',
-        elevation: 5,
+        elevation: 3,
         backgroundColor: colors.orange,
-        marginBottom: 1
+        marginBottom: 1,
+        flexDirection: 'row'
     },
-    rowImageTitle: {
+    rowImageWrap: {
         height: 125,
+        width: 125,
         backgroundColor: 'transparent'
     },
     rowInfo: {
         backgroundColor: '#fff',
         padding: 15,
+        flex: 1,
     },
     rowExcerpt: {
-        color: '#9d9d9d',
-        fontSize: 11,
+        color: '#888',
+        fontSize: 13,
     },
     rowImage: {
         position: 'absolute',
@@ -45,8 +48,8 @@ var RowStyles = StyleSheet.create({
         resizeMode: 'cover'
     },
     rowMeta: {
-        color: '#9d9d9d',
-        fontSize: 10,
+        color: '#333',
+        fontSize: 13,
     },
     linearGradient: {
         position: 'absolute',

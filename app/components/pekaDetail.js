@@ -19,6 +19,7 @@ import MainStyles from '../styles/mainStyles';
 import RowStyles from '../styles/rowStyles';
 import LinearGradient from 'react-native-linear-gradient';
 import HTMLView from 'react-native-htmlview';
+import Toolbar from '../uikit/Toolbar';
 
 let styles = StyleSheet.create({
     heading: {
@@ -54,26 +55,21 @@ class PekaDetail extends React.Component {
     }
     render() {
         const { state, actions, navigator, peka } = this.props;
-        console.log(peka.menus);
+        
         return (
             <View style={{flex: 1}}>
-                {Platform.OS === 'android' ? 
-                    <ToolbarAndroid
-                        title={peka.title}
-                        style={MainStyles.toolbar}
-                        titleColor={'#fff'}
-                        navIcon={{uri: 'back', isStatic: true}}
-                        onIconClicked={() => this.props.navigator.pop()}
-                        />
-                    :
-                    <View style={[MainStyles.toolbar, {alignItems: 'center', justifyContent: 'center'}]}>
-                        <Text numberOfLines={1} style={MainStyles.toolbarText}>{peka.title}</Text>
-                    </View>}
+                <Toolbar
+                    title={peka.title}
+                    style={MainStyles.toolbar}
+                    titleColor={'#fff'}
+                    navIconName={'md-arrow-back'}
+                    onIconClicked={() => this.props.navigator.pop()}
+                    />
                 <View style={{flex: 1, backgroundColor: '#fff'}}>
                     <ScrollView>
                         {peka.image ?
                             <TouchableOpacity onPress={this.toggleImageHeight.bind(this)}>
-                                <Image source={{uri: peka.image}} style={{resizeMode: this.state.imageResize, height: this.state.imageHeight, left: 0, right: 0}}/>
+                                <Image source={{uri: peka.image || ''}} style={{resizeMode: this.state.imageResize, height: this.state.imageHeight, left: 0, right: 0}}/>
                             </TouchableOpacity>
                             : null}
                         <View style={{padding: 15, marginBottom: 20}}>

@@ -22,7 +22,7 @@ class Header extends Component {
             );
         } else {
             return (
-                <View style={[MainStyles.toolbar, {alignItems: 'center', justifyContent: 'center'}]}>
+                <View style={[MainStyles.toolbar, {alignItems: 'center', flexDirection: 'row', paddingHorizontal: 20}]}>
                     <Text numberOfLines={1} style={MainStyles.toolbarText}>{this.props.title}</Text>
                 </View>
             );

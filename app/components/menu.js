@@ -56,7 +56,7 @@ class Menu extends React.Component {
             <TouchableOpacity onPress={this.onClickMenu.bind(this, rowData)}>
                 <View style={{height: 70, padding: 15, flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#ddd'}}>
                     <View style={{width: 40, height: 40, position: 'absolute', right: 15}}>
-                        <Image source={{uri: rowData.icon || null}} style={{width: 48, height: 48}}/>
+                        <Image source={{uri: rowData.icon || ''}} style={{width: 48, height: 48}}/>
                     </View>
                     <Text>{rowData.title}</Text>
                 </View>

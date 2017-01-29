@@ -20,22 +20,29 @@ const reducer = storage.reducer(combineReducers(reducers))  ;
 const store = createStoreWithMiddleware(reducer);
 
 import IntroContainer from './introContainer';
-import Home from '../components/home';
 import CabangDetail from '../components/cabangDetail';
 import CabangPage from '../components/cabangPage';
 import PekaDetail from '../components/pekaDetail';
-import MinistryDetail from '../components/ministryDetail';
 import EventDetail from '../components/eventDetail';
 import PostDetail from '../components/postDetail';
 import PostContainer from './postContainer';
 import PekaContainer from './pekaContainer';
 import EventContainer from './eventContainer';
 import PageDetail from '../components/pageDetail';
+import KhotbahDetail from '../components/khotbahDetail';
 import WartaPage from '../components/wartaPage';
+import WeeklyNewsPage from '../components/weeklyNewsPage';
 import InfoPage from '../components/infoPage';
+import KhotbahListPage from '../components/khotbahListPage';
+import AboutPage from '../components/aboutPage';
+import GalleryPage from '../components/galleryPage';
+import SettingsPage from '../components/settingsPage';
+import RegisterPage from '../components/registerPage';
+import LoginPage from '../components/loginPage';
+
 import MenuContainer from './menuContainer';
 import colors from '../styles/colors';
-import OneSignal from 'react-native-onesignal';
+// import OneSignal from 'react-native-onesignal';
 import { changeActivePost } from '../actions/postActions';
 
 const load = storage.createLoader(engine);
@@ -45,32 +52,25 @@ load(store)
 
 let _navigator;
 
-OneSignal.configure({
-    onNotificationOpened: function(message, data, isActive) {
-        switch (data.type) {
-            case 'post':
-                changeActivePost(data.data.id);
-                _navigator.push({
-                    name: 'postDetail',
-                    data: data.data
-                });
-                break;
-            case 'event':
-                _navigator.push({
-                    name: 'eventDetail',
-                    data: data.data
-                });
-                break;
-            case 'ministry':
-                _navigator.push({
-                    name: 'ministryDetail',
-                    data: data.data
-                });
-                break;
-        }
-    }
-});
-
+// OneSignal.configure({
+//     onNotificationOpened: function(message, data, isActive) {
+//         switch (data.type) {
+//             case 'post':
+//                 changeActivePost(data.data);
+//                 _navigator.push({
+//                     name: 'postDetail',
+//                     data: data.data
+//                 });
+//                 break;
+//             case 'event':
+//                 _navigator.push({
+//                     name: 'eventDetail',
+//                     data: data.data
+//                 });
+//                 break;
+//         }
+//     }
+// });
 
 BackAndroid.addEventListener('hardwareBackPress', () => {
   if (_navigator && _navigator.getCurrentRoutes().length > 1) {
@@ -92,13 +92,14 @@ class App extends React.Component {
     render() {
         return (
             <Provider store={store}>
-                <View style={{flex: 1}}>
+                <View style={{flex: 1, backgroundColor: '#eee'}}>
                     <StatusBar
                         backgroundColor={colors.orangeDark}
+                        barStyle="light-content"
                         />
                     <Navigator
                         initialRoute={{name: 'intro'}}
-                        configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromBottom}
+                        configureScene={(route, routeStack) => Navigator.SceneConfigs.FloatFromRight}
                         renderScene={(route, navigator) => {
                             _navigator = navigator;
                             switch (route.name) {
@@ -118,18 +119,32 @@ class App extends React.Component {
                                     return <PostContainer navigator={navigator}/>
                                 case 'cabangPage':
                                     return <CabangPage navigator={navigator}/>
+                                case 'galleryPage':
+                                    return <GalleryPage navigator={navigator}/>
+                                case 'aboutPage':
+                                    return <AboutPage navigator={navigator}/>
+                                case 'khotbahListPage':
+                                    return <KhotbahListPage navigator={navigator}/>
+                                case 'khotbahDetail':
+                                    return <KhotbahDetail navigator={navigator}/>
                                 case 'cabangDetail':
                                     return <CabangDetail cabang={route.data} navigator={navigator}/>
                                 case 'pekaDetail':
                                     return <PekaDetail peka={route.data} navigator={navigator}/>
                                 case 'eventDetail':
                                     return <EventDetail event={route.data} navigator={navigator}/>
-                                case 'ministryDetail':
-                                    return <MinistryDetail component={MinistryDetail} ministry={route.data} navigator={navigator}/>
                                 case 'postDetail':
                                     return <PostContainer component={PostDetail} post={route.data} navigator={navigator}/>
                                 case 'pageDetail':
                                     return <MenuContainer component={PageDetail} menu={route.data} type={route.type} navigator={navigator}/>
+                                case 'weeklyNewsPage':
+                                    return <WeeklyNewsPage navigator={navigator}/>;
+                                case 'settingsPage':
+                                    return <SettingsPage navigator={navigator}/>;
+                                case 'registerPage':
+                                    return <RegisterPage navigator={navigator}/>;
+                                case 'loginPage':
+                                    return <LoginPage navigator={navigator}/>;
                                 default:
                                     return <Text>Not Found</Text>;
                             }

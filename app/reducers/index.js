@@ -5,6 +5,9 @@ import ministry from './ministry';
 import event from './event';
 import posts from './posts';
 import menus from './menus';
+import gallery from './gallery';
+import member from './member';
+
 
 export {
     intro,
@@ -13,5 +16,7 @@ export {
     ministry,
     event,
     posts,
-    menus
+    menus,
+    gallery,
+    member
 };

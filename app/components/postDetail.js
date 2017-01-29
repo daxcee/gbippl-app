@@ -9,7 +9,8 @@ import {
     Linking,
     StyleSheet,
     TouchableOpacity,
-    Platform
+    Platform,
+    WebView
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -18,8 +19,9 @@ import WebIntent from 'react-native-webintent';
 import ActionButton from 'react-native-action-button';
 import HTMLView from 'react-native-htmlview';
 import MainStyles from '../styles/mainStyles';
-import WebContainer from '../utils/WebContainer';
 import LinearGradient from 'react-native-linear-gradient';
+import Toolbar from '../uikit/Toolbar';
+import { connect } from 'react-redux';
 
 let styles = StyleSheet.create({
     heading: {
@@ -57,58 +59,47 @@ class PostDetail extends React.Component {
         this.props.fetchSinglePost(this.props.activePost.id);
     }
     render() {
-        const { state, actions, navigator, activePost } = this.props;
+        const { state, actions, navigator, activePost, menus } = this.props;
         const { pastor, pastor_data } = activePost;
         if (activePost.content == undefined) activePost.content = '';
+
+        var content = `
+        <style>
+            body, html {
+                font-family: "Arial", Serif, Sans-Serif;
+                margin: 0;
+                padding: 0;
+                font-size: ${menus.fontSize}px;
+            }
+        </style>
+        <div style="height: 180px; background: url(${activePost.image}) no-repeat; background-size: cover; background-position: center center"></div>
+        <div style="padding: 10px">
+            ${activePost.content || ''}
+        </div>`;
+
         return (
             <View style={{flex: 1}}>
-                {Platform.OS === 'android' ? 
-                    <ToolbarAndroid
-                        title={activePost.title}
-                        style={MainStyles.toolbar}
-                        titleColor={'#fff'}
-                        navIcon={{uri: 'back', isStatic: true}}
-                        onIconClicked={() => this.props.navigator.pop()}
-                        />
-                    :
-                    <View style={[MainStyles.toolbar, {alignItems: 'center', justifyContent: 'center'}]}>
-                        <Text numberOfLines={1} style={MainStyles.toolbarText}>{activePost.title}</Text>
-                    </View>}
+                <Toolbar
+                    title={activePost.title}
+                    style={MainStyles.toolbar}
+                    titleColor={'#fff'}
+                    navIconName={'md-arrow-back'}
+                    onIconClicked={() => this.props.navigator.pop()}
+                    />
                 <View style={{flex: 1, backgroundColor: '#fff'}}>
-                    <ScrollView>
-                        {activePost.image ?
-                            <TouchableOpacity onPress={this.toggleImageHeight.bind(this)}>
-                                <View style={{height: this.state.imageHeight}}>
-                                    <Image source={{uri: activePost.image}} style={{resizeMode: this.state.imageResize, height: this.state.imageHeight, left: 0, right: 0}}/>
-                                    <LinearGradient
-                                        colors={['transparent', 'rgba(0,0,0,0.6)']}
-                                        style={{position: 'absolute',left: 0,right: 0,top: 0,height: this.state.imageHeight}}/>
-                                    <View style={{position: 'absolute',left: 0,right: 0,top: 0,height: this.state.imageHeight,padding: 15,justifyContent: 'flex-end'}}>
-                                        <Text style={{color: '#fff',fontSize: 20}}>{activePost.title}</Text>
-                                    </View>
-                                </View>
-                            </TouchableOpacity>
-                            : null}
-                        <View style={{padding: 15}}>
-                            <Text style={{textAlign: 'right'}}>{activePost.date}</Text>
-                            {pastor_data ?
-                                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                    <Image source={{uri: pastor_data.thumb}} style={{height: 32, width: 32, marginRight: 10, borderRadius: 32}} />
-                                    <Text>{pastor}</Text>
-                                </View>
-                                : null}
-                        </View>
-                        <View>
-                            <WebContainer
-                                style={{flex: 1}}
-                                html={activePost.content}
-                                autoHeight={true} />
-                        </View>
-                    </ScrollView>
+                    <WebView
+                        style={{flex: 1}}
+                        source={{html: content}}
+                        />
                 </View>
             </View>
         );
     }
 }
+
+PostDetail = connect(state => ({
+        menus: state.menus
+    })
+)(PostDetail);
 
 export default PostDetail;

@@ -20,6 +20,12 @@ class Grid extends Component {
         this.state = {
             dataSource: ds.cloneWithRows(items),
         }
+        this.scrollOffsetY = 0;
+        this.height = 0;
+        this.willComputeRowsToRender = false;
+        this.timeoutHandle = 0;
+        this.nextSectionToScrollTo = null;
+        this.scrollDirection = 'down';
     }
     componentWillReceiveProps(nextProps) {
         var items = this.generateItems(nextProps.items);
@@ -54,17 +60,38 @@ class Grid extends Component {
         return strands;
     }
 
+    getScrollDirection() {
+        if (this.scrollOffsetY - this.prevScrollOffsetY >= 0) {
+            return 'down';
+        } else {
+            return 'up';
+        }
+    }
+
+    onScroll(e) {
+        this.prevScrollOffsetY = this.scrollOffsetY || 0;
+        this.scrollOffsetY = e.nativeEvent.contentOffset.y;
+        this.scrollDirection = this.getScrollDirection();
+        this.height = e.nativeEvent.layoutMeasurement.height;
+
+        if ((this.scrollOffsetY + this.height) >= (e.nativeEvent.contentSize.height - 50) && this.scrollDirection == 'down') {
+            this.props.onEndReached();
+        }
+    }
+
     render() {
         if (this.props.type != 'listview') {
             var {items} = this.props;
+
+            // var strandsTest = this.splitItems(items, 2);
+            // console.log('STRAND', strandsTest);
 
             items = items.map((item, i) => {
                 return (
                     <TouchableOpacity key={i} onPress={item.onPress.bind(this)}>
                         <View style={styles.item}>
-                            <Image source={{uri: item.image}} style={styles.image} resizeMode={'cover'}/>
-                            <LinearGradient
-                                colors={['transparent', 'rgba(0,0,0,0.6)']}
+                            <Image source={{uri: item.image || ''}} style={styles.image} resizeMode={'cover'}/>
+                            <View
                                 style={styles.linearGradient}/>
                             <Text style={styles.text}>  
                                 {item.name}
@@ -89,12 +116,13 @@ class Grid extends Component {
             return (
                 <ScrollView
                     style={{flex: 1}}
+                    onScroll={this.onScroll.bind(this)}
                     refreshControl={
                         <RefreshControl
                             refreshing={this.props.refresh}
                             onRefresh={this.props.onRefresh}
                             tintColor={colors.orange}
-                            title="Memuat event..."
+                            title="Memuat data..."
                             colors={[colors.orange, colors.orangeDark, colors.orange]}
                             progressBackgroundColor="#fff"
                         />
@@ -127,7 +155,8 @@ class Grid extends Component {
 }
 
 Grid.defaultProps = {
-    items: []
+    items: [],
+    onEndReached: () => {}
 };
 
 var styles = StyleSheet.create({
@@ -152,13 +181,15 @@ var styles = StyleSheet.create({
         right: 0,
         top: 0,
         height: 180,
+        backgroundColor: 'rgba(0,0,0,0.6)'
     },
     text: {
         fontSize: 18,
         fontWeight: '700',
         color: '#fff',
         margin: 10,
-        textAlign: 'center'
+        textAlign: 'center',
+        backgroundColor: 'transparent'
     },
     image: {
         position: 'absolute',

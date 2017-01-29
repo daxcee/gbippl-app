@@ -20,31 +20,28 @@ import * as cabangActions from '../actions/cabangActions';
 import { bindActionCreators } from 'redux';
 import Header from './header';
 import Grid from './grid';
-import ViewPager from 'react-native-viewpager';
+import Swiper from 'react-native-swiper';
 var wHeight = Dimensions.get('window').height;
-const contentHeight = parseInt(wHeight - 120);
+const contentHeight = wHeight - 80;
 
 class CabangPage extends React.Component {
     constructor(props, context) {
         super(props, context);
-        var dataSource = new ViewPager.DataSource({
-            pageHasChanged: (p1, p2) => p1.id !== p2.id,
-        });
         this.state = {
             refresh: false,
             loaded: false,
-            dataSource: dataSource.cloneWithPages(this.props.state.cabang),
+            cabangs: this.props.state.cabang
         }
     }
 
     selectCabang(cabang) {
         this.props.actions.selectCabang(cabang);
-        this.props.navigator.push({
+        this.props.navigator.resetTo({
             name: 'wartaPage'
         });
     }
 
-    _renderPage(data, pageID) {
+    _renderPage(data) {
         return (
             <View style={styles.slide} key={data.id}>
                 <View style={styles.card}>
@@ -78,14 +75,14 @@ class CabangPage extends React.Component {
     }
 
     componentDidMount() {
-        console.log('INIT', this.props.state.cabang);
+        
         this.onRefresh();
     }
 
     onRefresh() {
         this.setState({refresh: true});
         this.props.actions.fetchCabang().then(() => {
-            this.setState({refresh: false, loaded: true, dataSource: this.state.dataSource.cloneWithPages(this.props.state.cabang)});
+            this.setState({refresh: false, loaded: true, cabangs: this.props.state.cabang});
         });
     }
    
@@ -96,12 +93,16 @@ class CabangPage extends React.Component {
                 <View style={styles.blue}>
                 </View>
                 <View style={styles.content}>
-                    <ViewPager
+                    <Swiper
                         style={styles.viewPager}
-                        dataSource={this.state.dataSource}
-                        renderPage={this._renderPage.bind(this)}
-                        isLoop={this.props.state.cabang.length > 0}
-                        autoPlay={false} />
+                        height={contentHeight}
+                        loop={this.props.state.cabang.length > 0}
+                        autoplay={false}
+                        key={'swiper-'+this.state.cabangs.length}>
+                        {this.state.cabangs.map(cabang => {
+                            return this._renderPage(cabang);
+                        })}
+                    </Swiper>
                 </View>
             </View>
         );
@@ -118,7 +119,8 @@ CabangPage = connect(state => ({
 
 let styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+        backgroundColor: '#eee',
     },
     blue: {
         backgroundColor: colors.orange,
@@ -127,10 +129,9 @@ let styles = StyleSheet.create({
     content: {
         backgroundColor: 'transparent',
         flex: 1,
-        marginTop: -100
+        marginTop: -150
     },
     viewPager: {
-        flex: 1,
     },
     card: {
         backgroundColor: '#fff',
@@ -190,6 +191,7 @@ let styles = StyleSheet.create({
     },
     slide: {
         flex: 1,
+        height: contentHeight,
         backgroundColor: 'transparent',
     },
 });

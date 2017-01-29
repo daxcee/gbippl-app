@@ -3,6 +3,7 @@ import update from 'react-addons-update';
 
 const initialState = {
     peka: [],
+    pinned: [],
     page: 1,
     isAll: false
 }
@@ -13,6 +14,10 @@ export default function peka(state = initialState, action = {}) {
         case types.REQUEST_PEKA:
             return update(state, {
                 page: {$set: payload.page}
+            });
+        case types.RECEIVE_PEKA_POST:
+            return update(state, {
+                pinned: {$set: payload.pinned}
             });
         case types.RECEIVE_PEKA:
             return update(state, {
